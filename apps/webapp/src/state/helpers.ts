@@ -4,11 +4,16 @@ import { uint8ArrayToHex } from '@penumbra-zone/types';
 import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1alpha1/txhash_pb';
 import { sha256Hash } from '@penumbra-zone/crypto-web';
 
+export const getTransactionPlan = async (req: TransactionPlannerRequest) => {
+  const { plan } = await viewClient.transactionPlanner(req);
+  return plan;
+};
+
 export const planWitnessBuildBroadcast = async (
   req: TransactionPlannerRequest,
   awaitDetection = true,
 ) => {
-  const { plan: transactionPlan } = await viewClient.transactionPlanner(req);
+  const transactionPlan = await getTransactionPlan(req);
 
   if (!transactionPlan) throw new Error('no plan in response');
 
