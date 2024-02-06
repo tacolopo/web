@@ -18,6 +18,10 @@ import {
   SpendView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1alpha1/shielded_pool_pb';
 import { Jsonified } from '@penumbra-zone/types';
+import {
+  SwapPlan,
+  SwapView,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1alpha1/dex_pb';
 
 const getValueView = (
   value: Value | undefined,
@@ -94,6 +98,24 @@ const getOutputView = (
   });
 };
 
+const getSwapView = (swapPlan: SwapPlan): SwapView => {
+  return new SwapView({
+    swapView: {
+      case: 'visible',
+      value: {
+        swap: {
+          body: {
+            delta1I: swapPlan.swapPlaintext?.delta1I,
+            delta2I: swapPlan.swapPlaintext?.delta2I,
+            tradingPair: swapPlan.swapPlaintext?.tradingPair,
+          },
+        },
+        swapPlaintext: swapPlan.swapPlaintext,
+      },
+    },
+  });
+};
+
 export const viewActionPlan =
   (denomMetadataByAssetId: Record<string, Jsonified<Metadata>>, fullViewingKey: string) =>
   (actionPlan: ActionPlan): ActionView => {
@@ -110,6 +132,13 @@ export const viewActionPlan =
           actionView: {
             case: 'output',
             value: getOutputView(actionPlan.action.value, denomMetadataByAssetId, fullViewingKey),
+          },
+        });
+      case 'swap':
+        return new ActionView({
+          actionView: {
+            case: 'swap',
+            value: getSwapView(actionPlan.action.value),
           },
         });
       case 'ics20Withdrawal':
