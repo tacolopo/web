@@ -49,7 +49,7 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
       const { dismiss } = toastFn(loadingTxToast);
 
       try {
-        const req = await assembleRequest(get().swap);
+        const req = await assembleSwapRequest(get().swap);
         const txHash = await planWitnessBuildBroadcast(req);
         dismiss();
         toastFn(successTxToast(txHash));
@@ -71,7 +71,7 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
   };
 };
 
-const assembleRequest = async ({ assetIn, amount, assetOut }: SwapSlice) => {
+const assembleSwapRequest = async ({ assetIn, amount, assetOut }: SwapSlice) => {
   if (assetIn?.value.valueView.case !== 'knownAssetId') throw new Error('unknown denom selected');
   if (!assetIn.value.valueView.value.metadata?.penumbraAssetId)
     throw new Error('missing metadata for assetIn');
