@@ -178,6 +178,58 @@ describe('classifyTransaction()', () => {
     expect(classifyTransaction(transactionView)).toBe('internalTransfer');
   });
 
+  it('returns `swap` for transactions with a `swap` action', () => {
+    const transactionView = new TransactionView({
+      bodyView: {
+        actionViews: [
+          {
+            actionView: {
+              case: 'swap',
+              value: {},
+            },
+          },
+          {
+            actionView: {
+              case: 'spend',
+              value: {},
+            },
+          },
+          {
+            actionView: {
+              case: 'output',
+              value: {},
+            },
+          },
+        ],
+      },
+    });
+
+    expect(classifyTransaction(transactionView)).toBe('swap');
+  });
+
+  it('returns `swapClaim` for transactions with a `swapClaim` action', () => {
+    const transactionView = new TransactionView({
+      bodyView: {
+        actionViews: [
+          {
+            actionView: {
+              case: 'swapClaim',
+              value: {},
+            },
+          },
+          {
+            actionView: {
+              case: 'output',
+              value: {},
+            },
+          },
+        ],
+      },
+    });
+
+    expect(classifyTransaction(transactionView)).toBe('swapClaim');
+  });
+
   it("returns `unknown` for transactions that don't fit the above categories", () => {
     const transactionView = new TransactionView({
       bodyView: {
