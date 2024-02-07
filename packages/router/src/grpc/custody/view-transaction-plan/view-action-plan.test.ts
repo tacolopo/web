@@ -19,6 +19,7 @@ import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/k
 import { Jsonified } from '@penumbra-zone/types';
 import { bech32AssetId } from '@penumbra-zone/types/src/asset';
 import { bech32ToUint8Array } from '@penumbra-zone/types/src/address';
+import { SwapPlaintext } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1alpha1/dex_pb';
 
 // Replace the wasm-pack import with the nodejs version so tests can run
 vi.mock('@penumbra-zone/wasm-bundler', () => vi.importActual('@penumbra-zone/wasm-nodejs'));
@@ -247,6 +248,79 @@ describe('viewActionPlan()', () => {
     });
   });
 
+  describe('`swap` action', () => {
+    test('returns an action view with the `swap` case', () => {
+      const swapPlaintext = new SwapPlaintext({
+        claimAddress: {
+          inner: new Uint8Array([0, 1, 2, 3]),
+        },
+        claimFee: {
+          amount: {
+            hi: 123n,
+            lo: 456n,
+          },
+          assetId: {
+            inner: new Uint8Array([0, 1, 2, 3]),
+          },
+        },
+        delta1I: {
+          hi: 123n,
+          lo: 456n,
+        },
+        delta2I: {
+          hi: 123n,
+          lo: 456n,
+        },
+        rseed: new Uint8Array([0, 1, 2, 3]),
+        tradingPair: {
+          asset1: {
+            inner: new Uint8Array([0, 1, 2, 3]),
+          },
+          asset2: {
+            inner: new Uint8Array([4, 5, 6, 7]),
+          },
+        },
+      });
+
+      const actionPlan = new ActionPlan({
+        action: {
+          case: 'swap',
+          value: {
+            feeBlinding: new Uint8Array([0, 1, 2, 3]),
+            proofBlindingR: new Uint8Array([0, 1, 2, 3]),
+            proofBlindingS: new Uint8Array([0, 1, 2, 3]),
+            swapPlaintext,
+          },
+        },
+      });
+
+      const actionView = viewActionPlan({}, mockFvk)(actionPlan);
+
+      const expected = new ActionView({
+        actionView: {
+          case: 'swap',
+          value: {
+            swapView: {
+              case: 'visible',
+              value: {
+                swap: {
+                  body: {
+                    delta1I: swapPlaintext.delta1I,
+                    delta2I: swapPlaintext.delta2I,
+                    tradingPair: swapPlaintext.tradingPair,
+                  },
+                },
+                swapPlaintext,
+              },
+            },
+          },
+        },
+      });
+
+      expect(actionView.equals(expected)).toBe(true);
+    });
+  });
+
   describe('`withdrawal` action', () => {
     test('returns an action view with the `ics20Withdrawal` case and no value', () => {
       const actionPlan = new ActionPlan({
@@ -275,8 +349,8 @@ describe('viewActionPlan()', () => {
     test('returns an action view with the case but no value', () => {
       const actionPlan = new ActionPlan({
         action: {
-          case: 'swap',
-          value: { feeBlinding: new Uint8Array() },
+          case: 'delegate',
+          value: { delegationAmount: { hi: 123n, lo: 456n } },
         },
       });
 
@@ -286,7 +360,7 @@ describe('viewActionPlan()', () => {
         actionView.equals(
           new ActionView({
             actionView: {
-              case: 'swap',
+              case: 'delegate',
               value: {},
             },
           }),
