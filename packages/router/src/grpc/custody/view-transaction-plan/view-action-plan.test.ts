@@ -19,7 +19,10 @@ import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/k
 import { Jsonified } from '@penumbra-zone/types';
 import { bech32AssetId } from '@penumbra-zone/types/src/asset';
 import { bech32ToUint8Array } from '@penumbra-zone/types/src/address';
-import { SwapPlaintext } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1alpha1/dex_pb';
+import {
+  BatchSwapOutputData,
+  SwapPlaintext,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1alpha1/dex_pb';
 
 // Replace the wasm-pack import with the nodejs version so tests can run
 vi.mock('@penumbra-zone/wasm-bundler', () => vi.importActual('@penumbra-zone/wasm-nodejs'));
@@ -311,6 +314,118 @@ describe('viewActionPlan()', () => {
                   },
                 },
                 swapPlaintext,
+              },
+            },
+          },
+        },
+      });
+
+      expect(actionView.equals(expected)).toBe(true);
+    });
+  });
+
+  describe('`swapClaim` action', () => {
+    test('returns an action view with the `swapClaim` case', () => {
+      const swapPlaintext = new SwapPlaintext({
+        claimAddress: address,
+        claimFee: {
+          amount: {
+            hi: 123n,
+            lo: 456n,
+          },
+          assetId: {
+            inner: new Uint8Array([0, 1, 2, 3]),
+          },
+        },
+        delta1I: {
+          hi: 123n,
+          lo: 456n,
+        },
+        delta2I: {
+          hi: 123n,
+          lo: 456n,
+        },
+        rseed: new Uint8Array([0, 1, 2, 3]),
+        tradingPair: {
+          asset1: {
+            inner: new Uint8Array([0, 1, 2, 3]),
+          },
+          asset2: {
+            inner: new Uint8Array([4, 5, 6, 7]),
+          },
+        },
+      });
+
+      const outputData = new BatchSwapOutputData({
+        delta1: swapPlaintext.delta1I,
+        delta2: swapPlaintext.delta2I,
+        epochStartingHeight: 1n,
+        unfilled1: { hi: 123n, lo: 456n },
+        unfilled2: { hi: 456n, lo: 789n },
+        height: 2n,
+        lambda1: {
+          hi: 1n,
+          lo: 2n,
+        },
+        lambda2: {
+          hi: 3n,
+          lo: 4n,
+        },
+        tradingPair: swapPlaintext.tradingPair,
+      });
+
+      const actionPlan = new ActionPlan({
+        action: {
+          case: 'swapClaim',
+          value: {
+            epochDuration: 1n,
+            position: 1n,
+            proofBlindingR: new Uint8Array([0, 1, 2, 3]),
+            proofBlindingS: new Uint8Array([4, 5, 6, 7]),
+            swapPlaintext,
+            outputData,
+          },
+        },
+      });
+
+      const actionView = viewActionPlan({}, mockFvk)(actionPlan);
+
+      const expected = new ActionView({
+        actionView: {
+          case: 'swapClaim',
+          value: {
+            swapClaimView: {
+              case: 'visible',
+              value: {
+                output1: {
+                  address: {
+                    addressView: {
+                      case: 'decoded',
+                      value: {
+                        address: swapPlaintext.claimAddress,
+                        index: {},
+                      },
+                    },
+                  },
+                },
+                output2: {
+                  address: {
+                    addressView: {
+                      case: 'decoded',
+                      value: {
+                        address: swapPlaintext.claimAddress,
+                        index: {},
+                      },
+                    },
+                  },
+                },
+                swapClaim: {
+                  body: {
+                    fee: swapPlaintext.claimFee,
+                    outputData,
+                  },
+                  epochDuration: 1n,
+                },
               },
             },
           },

@@ -19,6 +19,8 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1alpha1/shielded_pool_pb';
 import { Jsonified } from '@penumbra-zone/types';
 import {
+  SwapClaimPlan,
+  SwapClaimView,
   SwapPlan,
   SwapView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1alpha1/dex_pb';
@@ -116,6 +118,33 @@ const getSwapView = (swapPlan: SwapPlan): SwapView => {
   });
 };
 
+const getSwapClaimView = (swapClaimPlan: SwapClaimPlan, fullViewingKey: string): SwapClaimView => {
+  return new SwapClaimView({
+    swapClaimView: {
+      case: 'visible',
+      value: {
+        output1: {
+          address: swapClaimPlan.swapPlaintext?.claimAddress
+            ? getAddressView(swapClaimPlan.swapPlaintext.claimAddress, fullViewingKey)
+            : undefined,
+        },
+        output2: {
+          address: swapClaimPlan.swapPlaintext?.claimAddress
+            ? getAddressView(swapClaimPlan.swapPlaintext.claimAddress, fullViewingKey)
+            : undefined,
+        },
+        swapClaim: {
+          body: {
+            fee: swapClaimPlan.swapPlaintext?.claimFee,
+            outputData: swapClaimPlan.outputData,
+          },
+          epochDuration: swapClaimPlan.epochDuration,
+        },
+      },
+    },
+  });
+};
+
 export const viewActionPlan =
   (denomMetadataByAssetId: Record<string, Jsonified<Metadata>>, fullViewingKey: string) =>
   (actionPlan: ActionPlan): ActionView => {
@@ -139,6 +168,13 @@ export const viewActionPlan =
           actionView: {
             case: 'swap',
             value: getSwapView(actionPlan.action.value),
+          },
+        });
+      case 'swapClaim':
+        return new ActionView({
+          actionView: {
+            case: 'swapClaim',
+            value: getSwapClaimView(actionPlan.action.value, fullViewingKey),
           },
         });
       case 'ics20Withdrawal':
