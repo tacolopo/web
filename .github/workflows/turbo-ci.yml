@@ -14,7 +14,6 @@ jobs:
       wasm-diff: ${{ steps.diff.outputs.exit_code }}
     name: Diff
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' # only run on PRs
     steps:
       - uses: actions/checkout@v4
       - id: diff # store diff exit code in output
