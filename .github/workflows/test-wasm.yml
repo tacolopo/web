@@ -1,5 +1,7 @@
-name: Test WASM
-on: [workflow_call, workflow_dispatch]
+name: WASM
+on: workflow_call
+
+# workflow_call for optional forcing
 
 jobs:
   test-rust:
