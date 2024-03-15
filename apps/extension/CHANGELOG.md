@@ -1,5 +1,12 @@
 # chrome-extension
 
+## 5.0.1
+
+### Patch Changes
+
+- newtab override fix
+- polyfill Array.fromAsync
+
 ## 5.0.0
 
 ### Major Changes
