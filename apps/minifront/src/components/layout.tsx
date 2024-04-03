@@ -9,6 +9,17 @@ import { ExtensionNotInstalled } from './extension-not-installed';
 import { Footer } from './footer';
 import { isPraxConnected, isPraxConnectedTimeout, isPraxAvailable } from '@penumbra-zone/client';
 
+import { wallets as keplrWallet } from '@cosmos-kit/keplr';
+import { wallets as cosmostationWallets } from '@cosmos-kit/cosmostation';
+import { wallets as leapwallets } from '@cosmos-kit/leap';
+
+import { chains, assets } from '@penumbra-zone/chain-registry';
+import { ChainProvider } from '@cosmos-kit/react';
+const osmoTest5Chain = chains.find(({ chain_id }) => chain_id === 'osmo-test-5')!;
+const osmoTest5Assets = assets.find(({ chain_name }) => chain_name === osmoTest5Chain.chain_name)!;
+const nobleTestChain = chains.find(({ chain_id }) => chain_id === 'grand-1')!;
+const nobleTestAssets = assets.find(({ chain_name }) => chain_name === nobleTestChain.chain_name)!;
+
 export type LayoutLoaderResult =
   | { isInstalled: boolean; isConnected: boolean }
   | {
@@ -33,7 +44,10 @@ export const Layout = () => {
   if (!isConnected) return <ExtensionNotConnected />;
 
   return (
-    <>
+    <ChainProvider
+      chains={[osmoTest5Chain, nobleTestChain]}
+      wallets={[keplrWallet, cosmostationWallets, leapwallets]}
+    >
       <HeadTag />
       <div className='relative flex min-h-screen flex-col bg-background text-muted'>
         <Header />
@@ -43,6 +57,6 @@ export const Layout = () => {
         <Footer />
       </div>
       <Toaster />
-    </>
+    </ChainProvider>
   );
 };

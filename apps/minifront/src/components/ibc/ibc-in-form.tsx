@@ -8,7 +8,8 @@ import { useStore } from '../../state';
 import { ibcSelector } from '../../state/ibc';
 
 export const IbcInForm = ({ chainContext }: { chainContext: ChainContext }) => {
-  //const { chain } = useStore(ibcSelector);
+  const { chain } = useStore(ibcSelector);
+  console.log('chain', chain, chainContext);
   return (
     <Card gradient className='md:p-5'>
       <h1 className='font-headline text-xl'>Enter Penumbra</h1>

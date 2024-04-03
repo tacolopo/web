@@ -19,8 +19,8 @@ export const ChainSelector = () => {
     <div className='flex flex-col gap-3 rounded-lg border bg-background px-4 pb-5 pt-3'>
       <p className='text-base font-bold'>Chain</p>
       <Select
-        value={chain?.displayName ?? ''}
-        onValueChange={v => setChain(testnetIbcChains.find(i => i.displayName === v))}
+        value={chain?.chainId ?? ''}
+        onValueChange={v => setChain(testnetIbcChains.find(({ chainId }) => chainId === v))}
         open={openSelect}
         onOpenChange={open => setOpenSelect(open)}
       >
