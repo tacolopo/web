@@ -52,6 +52,11 @@ describe('fvk bech32m', () => {
       );
     });
 
+    test('Throws if bech32 fvk prefix is wrong', () => {
+      const wrongPrefix = bech32m.encode('penembrafullviewingkey', bech32m.toWords(okInner), 666);
+      expect(() => bech32ToFullViewingKey(wrongPrefix)).toThrow();
+    });
+
     test('Throws if bech32 fvk too long', () => {
       expect(() => bech32ToFullViewingKey(longBech32)).toThrow();
     });
