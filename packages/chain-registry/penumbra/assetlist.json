@@ -1,0 +1,217 @@
+{
+  "$schema": "./assetlist.schema.json",
+  "chain_name": "penumbra-testnet-deimos-6",
+  "assets": [
+    {
+      "base": "upenumbra",
+      "denom_units": [
+        {
+          "denom": "penumbra",
+          "exponent": 6
+        },
+        {
+          "denom": "mpenumbra",
+          "exponent": 3
+        },
+        {
+          "denom": "upenumbra",
+          "exponent": 0
+        }
+      ],
+      "description": "Penumbras's native token UM, used for staking, governance, payments, and fees.",
+      "display": "penumbra",
+      "images": [
+        {
+          "svg": "https://raw.githubusercontent.com/penumbra-zone/web/main/apps/extension/public/um-token.svg"
+        }
+      ],
+      "logo_URIs": {
+        "svg": "https://raw.githubusercontent.com/penumbra-zone/web/main/apps/extension/public/um-token.svg"
+      },
+      "name": "Penumbra",
+      "symbol": "UM"
+    },
+    {
+      "base": "ugm",
+      "denom_units": [
+        {
+          "denom": "gm",
+          "exponent": 6
+        },
+        {
+          "denom": "mgm",
+          "exponent": 3
+        },
+        {
+          "denom": "ugm",
+          "exponent": 0
+        }
+      ],
+      "display": "gm",
+      "name": "Penumbra Testnet GM",
+      "symbol": "GM"
+    },
+    {
+      "base": "ugn",
+      "denom_units": [
+        {
+          "denom": "gn",
+          "exponent": 6
+        },
+        {
+          "denom": "mgn",
+          "exponent": 3
+        },
+        {
+          "denom": "ugn",
+          "exponent": 0
+        }
+      ],
+      "display": "gn",
+      "name": "GN",
+      "symbol": "GN"
+    },
+    {
+      "base": "wtest_usd",
+      "denom_units": [
+        {
+          "denom": "test_usd",
+          "exponent": 18
+        },
+        {
+          "denom": "wtest_usd",
+          "exponent": 0
+        }
+      ],
+      "display": "test_usd",
+      "images": [
+        {
+          "svg": "https://raw.githubusercontent.com/cosmos/chain-registry/master/axelar/images/usdc.svg"
+        }
+      ],
+      "name": "Penumbra Testnet USD",
+      "symbol": "TestUSD"
+    },
+    {
+      "base": "cube",
+      "denom_units": [
+        {
+          "denom": "cube",
+          "exponent": 0
+        }
+      ],
+      "display": "cube",
+      "name": "Penumbra Testnet Cube",
+      "symbol": "CUBE"
+    },
+    {
+      "base": "pizza",
+      "denom_units": [
+        {
+          "denom": "pizza",
+          "exponent": 0
+        }
+      ],
+      "display": "pizza",
+      "images": [
+        {
+          "svg": "https://raw.githubusercontent.com/penumbra-zone/web/main/apps/minifront/public/ct_pizza.svg"
+        }
+      ],
+      "name": "Penumbra Testnet Pizza",
+      "symbol": "PIZZA"
+    },
+    {
+      "base": "udelegation_penumbravalid18nkv0r3sfp2seleq6du5kt3mhfce3k6cqm77kj2e7mhakmyw9v9qx42a20",
+      "denom_units": [
+        {
+          "denom": "delegation_penumbravalid18nkv0r3sfp2seleq6du5kt3mhfce3k6cqm77kj2e7mhakmyw9v9qx42a20",
+          "exponent": 6
+        },
+        {
+          "denom": "mdelegation_penumbravalid18nkv0r3sfp2seleq6du5kt3mhfce3k6cqm77kj2e7mhakmyw9v9qx42a20",
+          "exponent": 3
+        },
+        {
+          "denom": "udelegation_penumbravalid18nkv0r3sfp2seleq6du5kt3mhfce3k6cqm77kj2e7mhakmyw9v9qx42a20",
+          "exponent": 0
+        }
+      ],
+      "display": "delegation_penumbravalid18nkv0r3sfp2seleq6du5kt3mhfce3k6cqm77kj2e7mhakmyw9v9qx42a20",
+      "images": [
+        {
+          "png": "https://raw.githubusercontent.com/penumbra-zone/web/main/apps/minifront/public/favicon.png"
+        }
+      ],
+      "name": "Delegation (Penumbra Labs CI 1)",
+      "symbol": "Delegation (Penumbra Labs CI 1)"
+    },
+    {
+      "base": "udelegation_penumbravalid1qfxldejdhanmu302kcn5fm98q5d7d2upfhzqhaz95hyjdn82pqysqfq050",
+      "denom_units": [
+        {
+          "denom": "delegation_penumbravalid1qfxldejdhanmu302kcn5fm98q5d7d2upfhzqhaz95hyjdn82pqysqfq050",
+          "exponent": 6
+        },
+        {
+          "denom": "mdelegation_penumbravalid1qfxldejdhanmu302kcn5fm98q5d7d2upfhzqhaz95hyjdn82pqysqfq050",
+          "exponent": 3
+        },
+        {
+          "denom": "udelegation_penumbravalid1qfxldejdhanmu302kcn5fm98q5d7d2upfhzqhaz95hyjdn82pqysqfq050",
+          "exponent": 0
+        }
+      ],
+      "display": "delegation_penumbravalid1qfxldejdhanmu302kcn5fm98q5d7d2upfhzqhaz95hyjdn82pqysqfq050",
+      "images": [
+        {
+          "png": "https://raw.githubusercontent.com/penumbra-zone/web/main/apps/minifront/public/favicon.png"
+        }
+      ],
+      "name": "Delegation (Penumbra Labs CI 2)",
+      "symbol": "Delegation (Penumbra Labs CI 2)"
+    },
+    {
+      "base": "transfer/channel-0/uosmo",
+      "denom_units": [
+        {
+          "denom": "osmo",
+          "exponent": 6
+        },
+        {
+          "denom": "transfer/channel-0/uosmo",
+          "exponent": 0
+        }
+      ],
+      "display": "osmo",
+      "images": [
+        {
+          "svg": "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/osmo.svg"
+        }
+      ],
+      "name": "Penumbra Testnet Osmosis",
+      "symbol": "OSMO"
+    },
+    {
+      "base": "transfer/channel-3/uusdc",
+      "denom_units": [
+        {
+          "denom": "usdc",
+          "exponent": 6
+        },
+        {
+          "denom": "transfer/channel-3/uusdc",
+          "exponent": 0
+        }
+      ],
+      "display": "usdc",
+      "images": [
+        {
+          "svg": "https://raw.githubusercontent.com/cosmos/chain-registry/master/axelar/images/usdc.svg"
+        }
+      ],
+      "name": "Penumbra Testnet Noble",
+      "symbol": "USDC"
+    }
+  ]
+}

@@ -16,5 +16,9 @@
     "clean": "rm -rfv dist",
     "lint": "eslint \"**/*.ts*\"",
     "test": "vitest run"
+  },
+  "devDependencies": {
+    "@chain-registry/types": "^0.18.3",
+    "@penumbra-zone/chain-registry": "workspace:^"
   }
 }

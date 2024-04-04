@@ -1,15 +1,12 @@
+import { assets as testnetAssetList } from './assetlist.json';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import LocalAssetRegistry from './local-asset-registry.json';
 import { JsonValue } from '@bufbuild/protobuf';
 
-export const localAssets: Metadata[] = LocalAssetRegistry.map(a =>
-  Metadata.fromJson(a as JsonValue),
+export const testnetAssets: Metadata[] = testnetAssetList.map(a =>
+  Metadata.fromJson(a as unknown as JsonValue),
 );
 
-export const STAKING_TOKEN = 'penumbra';
-export const STAKING_TOKEN_METADATA = localAssets.find(
-  metadata => metadata.display === STAKING_TOKEN,
-)!;
+export const PenumbraToken = testnetAssets.find(metadata => metadata.display === 'penumbra')!;
 
 export interface IbcCaptureGroups {
   channel: string;

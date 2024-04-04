@@ -1,0 +1,35 @@
+{
+  "name": "@penumbra-zone/chain-registry",
+  "version": "1.0.0",
+  "license": "MIT",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./*": {
+      "import": "./dist/*.js",
+      "types": "./dist/*.d.ts"
+    }
+  },
+  "scripts": {
+    "prebuild": "mkdir -p src && tsx scripts/build.ts",
+    "build": "tsc -p tsconfig.json --outDir dist --module es2022 --declaration",
+    "clean": "rm -rfv dist"
+  },
+  "devDependencies": {
+    "@chain-registry/types": "^0.18.3",
+    "blakejs": "^1.2.1",
+    "glob": "^10.3.12",
+    "mkdirp": "^3.0.1",
+    "node-fetch": "^3.3.2",
+    "tsx": "^4.7.1"
+  },
+  "dependencies": {
+    "sharp": "^0.33.3"
+  }
+}
