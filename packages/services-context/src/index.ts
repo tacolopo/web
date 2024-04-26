@@ -12,6 +12,8 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { Wallet } from '@penumbra-zone/types/wallet';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
+import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1/app_pb';
+import { Jsonified } from '@penumbra-zone/types/jsonified';
 
 export interface ServicesConfig {
   readonly idbVersion: number;
@@ -88,12 +90,26 @@ export class Services implements ServicesInterface {
 
   private async initializeWalletServices(): Promise<WalletServices> {
     const { walletId, fullViewingKey, idbVersion: dbVersion } = await this.config;
-    const params = await this.querier.app.appParams();
-    if (!params.sctParams?.epochDuration) throw new Error('Epoch duration unknown');
-    const {
-      chainId,
-      sctParams: { epochDuration },
-    } = params;
+
+    // if we can't fetch params, we'll try starting up with params from storage.
+    // we won't be able to broadcast or query, but we can view our local state.
+    const queriedParams = await this.querier.app.appParams().catch((e: unknown) => void e);
+    const storedParams = await localExtStorage
+      .get('params')
+      .then(j => j && AppParameters.fromJson(j));
+    const chainId = queriedParams?.chainId ?? storedParams?.chainId;
+    const epochDuration =
+      queriedParams?.sctParams?.epochDuration ?? storedParams?.sctParams?.epochDuration;
+
+    if (!chainId) throw new Error('Cannot initialize without a chainId');
+    else if (storedParams?.chainId && storedParams.chainId !== chainId)
+      throw new Error(
+        'Stored chainId does not match the remote chainId. Your local state may\
+        be invalid, and you cannot use this remote endpoint without clearing\
+        your cached chain.',
+      );
+    else if (!storedParams?.chainId && queriedParams?.chainId)
+      await localExtStorage.set('params', queriedParams.toJson() as Jsonified<AppParameters>);
 
     const registryClient = new ChainRegistryClient();
 
@@ -106,6 +122,7 @@ export class Services implements ServicesInterface {
 
     void syncLastBlockWithLocal(indexedDb);
 
+    if (!epochDuration) throw new Error('No known epoch duration');
     const viewServer = await ViewServer.initialize({
       fullViewingKey,
       epochDuration,
@@ -119,7 +136,7 @@ export class Services implements ServicesInterface {
       querier: this.querier,
       indexedDb,
       stakingTokenMetadata: registry.getMetadata(registry.stakingAssetId),
-      numeraires: registry.numeraires.map(numeraires => registry.getMetadata(numeraires)),
+      numeraires: registry.numeraires.map(n => registry.getMetadata(n)),
     });
 
     return { viewServer, blockProcessor, indexedDb, querier: this.querier };

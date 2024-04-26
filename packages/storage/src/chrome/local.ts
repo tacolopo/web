@@ -9,11 +9,14 @@ import { LocalStorageState, LocalStorageVersion } from './types';
 // extension app.
 declare const MINIFRONT_URL: string;
 
-export const localDefaults: LocalStorageState = {
-  wallets: [],
-  fullSyncHeight: undefined,
-  knownSites: [{ origin: MINIFRONT_URL, choice: UserChoice.Approved, date: Date.now() }],
+export const localDefaults: Required<LocalStorageState> = {
   frontendUrl: MINIFRONT_URL,
+  fullSyncHeight: undefined,
+  grpcEndpoint: undefined,
+  knownSites: [{ origin: MINIFRONT_URL, choice: UserChoice.Approved, date: Date.now() }],
+  params: undefined,
+  passwordKeyPrint: undefined,
+  wallets: [],
 };
 
 // Meant to be used for long-term persisted data. It is cleared when the extension is removed.

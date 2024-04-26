@@ -4,7 +4,9 @@ import { servicesCtx } from '../ctx/prax';
 export const statusStream: Impl['statusStream'] = async function* (_, ctx) {
   const services = await ctx.values.get(servicesCtx)();
   const { indexedDb } = await services.getWalletServices();
-  const latestBlockHeight = await services.querier.tendermint.latestBlockHeight();
+  const latestRemoteBlockHeight = await services.querier.tendermint
+    .latestBlockHeight()
+    .catch(() => undefined);
 
   // As syncing does not end, nor does this stream.
   // It waits for events triggered externally when block sync has progressed.
@@ -13,7 +15,8 @@ export const statusStream: Impl['statusStream'] = async function* (_, ctx) {
   for await (const update of subscription) {
     const syncHeight = update.value;
     yield {
-      latestKnownBlockHeight: syncHeight >= latestBlockHeight ? syncHeight : latestBlockHeight,
+      latestKnownBlockHeight:
+        syncHeight <= (latestRemoteBlockHeight ?? 0n) ? latestRemoteBlockHeight : syncHeight,
       partialSyncHeight: syncHeight,
       fullSyncHeight: syncHeight,
     };

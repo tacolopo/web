@@ -1,6 +1,8 @@
 import { UserChoice } from '@penumbra-zone/types/user-choice';
 import { WalletJson } from '@penumbra-zone/types/wallet';
 import { KeyPrintJson } from '@penumbra-zone/crypto-web/encryption';
+import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1/app_pb';
+import { Jsonified } from '@penumbra-zone/types/jsonified';
 
 export enum LocalStorageVersion {
   V1 = 'V1',
@@ -14,10 +16,11 @@ export interface OriginRecord {
 }
 
 export interface LocalStorageState {
-  wallets: WalletJson[];
-  grpcEndpoint?: string;
   frontendUrl: string;
-  passwordKeyPrint?: KeyPrintJson;
-  fullSyncHeight?: number;
+  fullSyncHeight: number | undefined;
+  grpcEndpoint: string | undefined;
   knownSites: OriginRecord[];
+  params: Jsonified<AppParameters> | undefined;
+  passwordKeyPrint: KeyPrintJson | undefined;
+  wallets: WalletJson[];
 }
