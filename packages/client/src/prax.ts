@@ -83,11 +83,14 @@ export const throwIfPraxNotInstalled = async () => {
   if (!isInstalled) throw new PraxNotInstalledError('Prax not installed');
 };
 
-let praxTransport: Transport | undefined;
-export const createPraxClient = <T extends ServiceType>(serviceType: T) => {
-  praxTransport ??= createChannelTransport({
+export const createPraxTransport = () =>
+  createChannelTransport({
     jsonOptions,
     getPort: getPraxPort,
   });
+
+let praxTransport: Transport | undefined;
+export const createPraxClient = <T extends ServiceType>(serviceType: T) => {
+  praxTransport ??= createPraxTransport();
   return createPromiseClient(serviceType, praxTransport);
 };
