@@ -846,10 +846,6 @@ importers:
         version: 1.0.7(tailwindcss@3.4.3)
 
   packages/transport-chrome:
-    dependencies:
-      '@penumbra-zone/transport-dom':
-        specifier: workspace:*
-        version: link:../transport-dom
     devDependencies:
       '@bufbuild/protobuf':
         specifier: ^1.9.0
@@ -857,6 +853,9 @@ importers:
       '@connectrpc/connect':
         specifier: ^1.4.0
         version: 1.4.0(@bufbuild/protobuf@1.9.0)
+      '@penumbra-zone/transport-dom':
+        specifier: workspace:^
+        version: link:../transport-dom
 
   packages/transport-dom:
     devDependencies:

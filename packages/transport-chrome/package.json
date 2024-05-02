@@ -13,11 +13,12 @@
   },
   "devDependencies": {
     "@bufbuild/protobuf": "^1.9.0",
-    "@connectrpc/connect": "^1.4.0"
+    "@connectrpc/connect": "^1.4.0",
+    "@penumbra-zone/transport-dom": "workspace:^"
   },
   "peerDependencies": {
     "@bufbuild/protobuf": "^1.9.0",
     "@connectrpc/connect": "^1.4.0",
-    "@penumbra-zone/transport-dom": "workspace:*"
+    "@penumbra-zone/transport-dom": "workspace:^"
   }
 }
