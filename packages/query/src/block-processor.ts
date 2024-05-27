@@ -101,7 +101,7 @@ export class BlockProcessor implements BlockProcessorInterface {
       maxDelay: 30_000, // 30 seconds
       retry: async (e, attemptNumber) => {
         if (process.env['NODE_ENV'] === 'development')
-          console.warn('Sync failure', attemptNumber, e);
+          console.debug('Sync failure', attemptNumber, e);
         await this.viewServer.resetTreeToStored();
         return !this.abortController.signal.aborted;
       },
@@ -176,7 +176,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     const startHeight = fullSyncHeight !== undefined ? fullSyncHeight + 1n : 0n; // Must compare to undefined as 0n is falsy
     let latestKnownBlockHeight = await backOff(() => this.querier.tendermint.latestBlockHeight(), {
       retry: e => {
-        if (process.env['NODE_ENV'] === 'development') console.warn(e);
+        if (process.env['NODE_ENV'] === 'development') console.debug(e);
         return true;
       },
     });

@@ -13,7 +13,7 @@ export const statusStream: Impl['statusStream'] = async function* (_, ctx) {
     },
     {
       retry: e => {
-        if (process.env['NODE_ENV'] === 'development') console.warn(e);
+        if (process.env['NODE_ENV'] === 'development') console.debug(e);
         return true;
       },
     },
