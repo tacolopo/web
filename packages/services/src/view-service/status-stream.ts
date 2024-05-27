@@ -1,12 +1,23 @@
 import type { Impl } from '.';
 import { servicesCtx } from '../ctx/prax';
+import { backOff } from 'exponential-backoff';
 
 export const statusStream: Impl['statusStream'] = async function* (_, ctx) {
   const services = await ctx.values.get(servicesCtx)();
   const { indexedDb } = await services.getWalletServices();
-  const latestRemoteBlockHeight = await services.querier.tendermint
-    .latestBlockHeight()
-    .catch(() => undefined);
+
+  let latestRemoteBlockHeight: bigint | undefined = undefined;
+  void backOff(
+    async () => {
+      latestRemoteBlockHeight ??= await services.querier.tendermint.latestBlockHeight();
+    },
+    {
+      retry: e => {
+        if (process.env['NODE_ENV'] === 'development') console.warn(e);
+        return true;
+      },
+    },
+  );
 
   // As syncing does not end, nor does this stream.
   // It waits for events triggered externally when block sync has progressed.
