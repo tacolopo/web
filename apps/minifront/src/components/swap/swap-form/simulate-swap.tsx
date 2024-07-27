@@ -1,5 +1,5 @@
 import { Box } from '@repo/ui/components/ui/box';
-import { SimulateSwapResult } from './simulate-swap-result';
+import { SimulateSwapComponent } from './simulate-swap-result';
 import { AllSlices } from '../../../state';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { EstimateButton } from './estimate-button';
@@ -20,7 +20,7 @@ export const SimulateSwap = ({ layoutId }: { layoutId: string }) => {
       headerContent={<EstimateButton disabled={disabled} onClick={() => void simulateSwap()} />}
       layoutId={layoutId}
     >
-      {result && <SimulateSwapResult result={result} />}
+      {result && <SimulateSwapComponent result={result} />}
     </Box>
   );
 };

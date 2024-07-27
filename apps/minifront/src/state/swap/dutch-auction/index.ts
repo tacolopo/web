@@ -3,7 +3,7 @@ import { AllSlices, SliceCreator, useStore } from '../..';
 import { planBuildBroadcast } from '../../helpers';
 import { assembleScheduleRequest } from './assemble-schedule-request';
 import { AuctionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
-import { sendSimulateTradeRequest } from '../helpers';
+import { sendSimulateTradeRequest } from '../instant-swap/simulation';
 import { fromBaseUnitAmount, isZero, multiplyAmountByNumber } from '@penumbra-zone/types/amount';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb.js';
@@ -221,8 +221,8 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
         swap.dutchAuction.estimateLoading = true;
       });
 
-      const res = await sendSimulateTradeRequest(get().swap);
-      const estimatedOutputAmount = res.output?.output?.amount;
+      const { execution } = await sendSimulateTradeRequest(get().swap);
+      const estimatedOutputAmount = execution?.output?.amount;
 
       if (estimatedOutputAmount) {
         const assetOut = get().swap.assetOut;

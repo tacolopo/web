@@ -1,68 +1,35 @@
-import { AllSlices, SliceCreator } from '..';
-import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
-import { isValidAmount, planBuildBroadcast } from '../helpers';
 import {
-  AssetId,
   Metadata,
-  Value,
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-import { BigNumber } from 'bignumber.js';
-import { getAddressByIndex } from '../../fetchers/address';
+import { SwapExecution_Trace } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
+import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb.js';
-import { errorToast } from '@repo/ui/lib/toast/presets';
-import {
-  SwapExecution,
-  SwapExecution_Trace,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
-import { viewClient } from '../../clients';
+import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { getAddressIndex } from '@penumbra-zone/getters/address-view';
+import { getAssetId } from '@penumbra-zone/getters/metadata';
+import { getSwapCommitmentFromTx } from '@penumbra-zone/getters/transaction';
 import {
   getAssetIdFromValueView,
   getDisplayDenomExponentFromValueView,
   getMetadata,
 } from '@penumbra-zone/getters/value-view';
-import { getAssetId } from '@penumbra-zone/getters/metadata';
-import { getSwapCommitmentFromTx } from '@penumbra-zone/getters/transaction';
-import { getAddressIndex } from '@penumbra-zone/getters/address-view';
 import { toBaseUnit } from '@penumbra-zone/types/lo-hi';
-import { getAmountFromValue, getAssetIdFromValue } from '@penumbra-zone/getters/value';
-import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb.js';
-import { divideAmounts } from '@penumbra-zone/types/amount';
-import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
-import { SwapSlice } from '.';
-import { sendSimulateTradeRequest } from './helpers';
-import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
-
-const getMetadataByAssetId = async (
-  traces: SwapExecution_Trace[] = [],
-): Promise<Record<string, Metadata>> => {
-  const map: Record<string, Metadata> = {};
-
-  const promises = traces.flatMap(trace =>
-    trace.value.map(async value => {
-      if (!value.assetId || map[bech32mAssetId(value.assetId)]) {
-        return;
-      }
-
-      const { denomMetadata } = await viewClient.assetMetadataById({ assetId: value.assetId });
-
-      if (denomMetadata) {
-        map[bech32mAssetId(value.assetId)] = denomMetadata;
-      }
-    }),
-  );
-
-  await Promise.all(promises);
-
-  return map;
-};
+import { errorToast } from '@repo/ui/lib/toast/presets';
+import { BigNumber } from 'bignumber.js';
+import { SwapSlice } from '..';
+import { AllSlices, SliceCreator } from '../..';
+import { getAddressByIndex } from '../../../fetchers/address';
+import { isValidAmount, planBuildBroadcast } from '../../helpers';
+import { calculatePriceImpact, getTracesMetadata, sendSimulateTradeRequest } from './simulation';
 
 export interface SimulateSwapResult {
   output: ValueView;
+  input: ValueView;
   unfilled: ValueView;
   priceImpact: number | undefined;
   traces?: SwapExecution_Trace[];
-  metadataByAssetId: Record<string, Metadata>;
+  metadataByAssetId: Map<string, Metadata>;
 }
 
 interface Actions {
@@ -94,13 +61,25 @@ export const createInstantSwapSlice = (): SliceCreator<InstantSwapSlice> => (set
           swap.instantSwap.simulateSwapLoading = true;
         });
 
-        const res = await sendSimulateTradeRequest(get().swap);
+        const { inputValue, execution, unfilledValue } = await sendSimulateTradeRequest(get().swap);
+
+        const inputMetadata = getMetadata(get().swap.assetIn?.balanceView);
+
+        const input = new ValueView({
+          valueView: {
+            case: 'knownAssetId',
+            value: {
+              amount: inputValue.amount,
+              metadata: inputMetadata,
+            },
+          },
+        });
 
         const output = new ValueView({
           valueView: {
             case: 'knownAssetId',
             value: {
-              amount: res.output?.output?.amount,
+              amount: execution?.output?.amount,
               metadata: get().swap.assetOut,
             },
           },
@@ -110,20 +89,21 @@ export const createInstantSwapSlice = (): SliceCreator<InstantSwapSlice> => (set
           valueView: {
             case: 'knownAssetId',
             value: {
-              amount: res.unfilled?.amount,
-              metadata: getMetadata(get().swap.assetIn?.balanceView),
+              amount: unfilledValue?.amount,
+              metadata: inputMetadata,
             },
           },
         });
 
-        const metadataByAssetId = await getMetadataByAssetId(res.output?.traces);
+        const metadataByAssetId = await getTracesMetadata(execution?.traces);
 
         set(({ swap }) => {
           swap.instantSwap.simulateSwapResult = {
+            input,
             output,
             unfilled,
-            priceImpact: calculatePriceImpact(res.output),
-            traces: res.output?.traces,
+            priceImpact: calculatePriceImpact(execution),
+            traces: execution?.traces,
             metadataByAssetId,
           };
         });
@@ -210,46 +190,6 @@ export const issueSwapClaim = async (
 ) => {
   const req = new TransactionPlannerRequest({ swapClaims: [{ swapCommitment }], source });
   await planBuildBroadcast('swapClaim', req, { skipAuth: true });
-};
-
-/*
-  Price impact is the change in price as a consequence of the trade's size. In SwapExecution, the \
-  first trace in the array is the best execution for the swap. To calculate price impact, take
-  the price of the trade and see the % diff off the best execution trace.
- */
-const calculatePriceImpact = (swapExec?: SwapExecution): number | undefined => {
-  if (!swapExec?.traces.length || !swapExec.output || !swapExec.input) {
-    return undefined;
-  }
-
-  // Get the price of the estimate for the swap total
-  const inputAmount = getAmountFromValue(swapExec.input);
-  const outputAmount = getAmountFromValue(swapExec.output);
-  const swapEstimatePrice = divideAmounts(outputAmount, inputAmount);
-
-  // Get the price in the best execution trace
-  const inputAssetId = getAssetIdFromValue(swapExec.input);
-  const outputAssetId = getAssetIdFromValue(swapExec.output);
-  const bestTrace = swapExec.traces[0]!;
-  const bestInputAmount = getMatchingAmount(bestTrace.value, inputAssetId);
-  const bestOutputAmount = getMatchingAmount(bestTrace.value, outputAssetId);
-  const bestTraceEstimatedPrice = divideAmounts(bestOutputAmount, bestInputAmount);
-
-  // Difference = (priceB - priceA) / priceA
-  const percentDifference = swapEstimatePrice
-    .minus(bestTraceEstimatedPrice)
-    .div(bestTraceEstimatedPrice);
-
-  return percentDifference.toNumber();
-};
-
-const getMatchingAmount = (values: Value[], toMatch: AssetId): Amount => {
-  const match = values.find(v => toMatch.equals(v.assetId));
-  if (!match?.amount) {
-    throw new Error('No match in values array found');
-  }
-
-  return match.amount;
 };
 
 export const instantSwapSubmitButtonDisabledSelector = (state: AllSlices) =>

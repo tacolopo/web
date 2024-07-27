@@ -10,15 +10,15 @@ export const Price = ({
   metadataByAssetId,
 }: {
   trace: SwapExecution_Trace;
-  metadataByAssetId: Record<string, Metadata>;
+  metadataByAssetId: Map<string, Metadata>;
 }) => {
   const inputValue = trace.value[0];
   const outputValue = trace.value[trace.value.length - 1];
   let price: string | undefined;
 
   if (inputValue?.amount && outputValue?.amount && inputValue.assetId && outputValue.assetId) {
-    const firstValueMetadata = metadataByAssetId[bech32mAssetId(inputValue.assetId)];
-    const lastValueMetadata = metadataByAssetId[bech32mAssetId(outputValue.assetId)];
+    const firstValueMetadata = metadataByAssetId.get(bech32mAssetId(inputValue.assetId));
+    const lastValueMetadata = metadataByAssetId.get(bech32mAssetId(outputValue.assetId));
 
     if (firstValueMetadata?.symbol && lastValueMetadata?.symbol) {
       const inputDisplayDenomExponent = getDisplayDenomExponent.optional()(firstValueMetadata) ?? 0;

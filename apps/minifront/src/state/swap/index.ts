@@ -1,8 +1,4 @@
-import {
-  Metadata,
-  ValueView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-import { SwapExecution_Trace } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
+import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
 import { AllSlices, SliceCreator } from '..';
 import { DurationOption } from './constants';
@@ -31,14 +27,6 @@ import {
   getFirstMetadataNotMatchingBalancesResponse,
   getBalanceByMatchingMetadataAndAddressIndex,
 } from './getters';
-
-export interface SimulateSwapResult {
-  metadataByAssetId: Record<string, Metadata>;
-  output: ValueView;
-  priceImpact: number | undefined;
-  traces?: SwapExecution_Trace[];
-  unfilled: ValueView;
-}
 
 interface Actions {
   setAssetIn: (asset: BalancesResponse) => void;

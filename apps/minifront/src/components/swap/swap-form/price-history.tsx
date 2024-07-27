@@ -1,29 +1,16 @@
-import { getMetadataFromBalancesResponse } from '@penumbra-zone/getters/balances-response';
-import { AbridgedZQueryState } from '@penumbra-zone/zquery/src/types';
 import { Box } from '@repo/ui/components/ui/box';
+import { Button } from '@repo/ui/components/ui/button';
 import { CandlestickPlot } from '@repo/ui/components/ui/candlestick-plot';
 import { useEffect, useMemo, useState } from 'react';
 import { getBlockDate } from '../../../fetchers/block-date';
-import { AllSlices } from '../../../state';
-import { useStatus } from '../../../state/status';
-import { combinedCandlestickDataSelector } from '../../../state/swap/helpers';
-import { useCandles, useRevalidateCandles } from '../../../state/swap/price-history';
+import { latestKnownBlockHeightSelector, useStatus } from '../../../state/status';
+import {
+  combinedCandlestickDataSelector,
+  priceHistorySelector,
+  useCandles,
+  useRevalidateCandles,
+} from '../../../state/swap/price-history';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
-import { Button } from '@repo/ui/components/ui/button';
-
-const priceHistorySelector = (state: AllSlices) => ({
-  startMetadata: getMetadataFromBalancesResponse.optional()(state.swap.assetIn),
-  endMetadata: state.swap.assetOut,
-  historyLimit: state.swap.priceHistory.historyLimit,
-  historyStart: state.swap.priceHistory.historyStart,
-});
-
-const latestKnownBlockHeightSelector = (
-  state: AbridgedZQueryState<{
-    fullSyncHeight?: bigint;
-    latestKnownBlockHeight?: bigint;
-  }>,
-) => state.data?.latestKnownBlockHeight;
 
 export const PriceHistory = () => {
   const { startMetadata, endMetadata, historyLimit, historyStart } =
@@ -97,6 +84,7 @@ export const PriceHistory = () => {
       ) : (
         <div className='text-sm'>No recent price data</div>
       )}
+
       <CandlestickPlot
         className='h-[240px] w-full'
         candles={candles.data}

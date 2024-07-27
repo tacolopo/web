@@ -6,11 +6,12 @@ import basicSsl from '@vitejs/plugin-basic-ssl';
 import { commitInfoPlugin } from './src/utils/commit-info-vite-plugin';
 import polyfillNode from 'vite-plugin-node-stdlib-browser';
 
-export default defineConfig(({ mode }) => {
-  return {
-    define: { 'globalThis.__DEV__': mode !== 'production' },
-    clearScreen: false,
-    base: './',
-    plugins: [polyfillNode(), react(), basicSsl(), commitInfoPlugin()],
-  };
-});
+export default defineConfig(({ mode }) => ({
+  define: {
+    'globalThis.__DEV__': mode !== 'production',
+    'BigNumber.DEBUG': mode !== 'production',
+  },
+  clearScreen: false,
+  base: './',
+  plugins: [polyfillNode(), react(), basicSsl(), commitInfoPlugin()],
+}));

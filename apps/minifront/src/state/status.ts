@@ -1,4 +1,4 @@
-import { ZQueryState } from '@penumbra-zone/zquery/src/types';
+import { AbridgedZQueryState, ZQueryState } from '@penumbra-zone/zquery/src/types';
 import { SliceCreator, useStore } from '.';
 import { createZQuery } from '@penumbra-zone/zquery';
 import { getStatusStream } from '../fetchers/status';
@@ -37,3 +37,10 @@ export interface StatusSlice {
 export const createStatusSlice = (): SliceCreator<StatusSlice> => () => ({
   status,
 });
+
+export const latestKnownBlockHeightSelector = (
+  state: AbridgedZQueryState<{
+    fullSyncHeight?: bigint;
+    latestKnownBlockHeight?: bigint;
+  }>,
+) => state.data?.latestKnownBlockHeight;

@@ -8,13 +8,13 @@ import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 import { ValueViewComponent } from '@repo/ui/components/ui/value';
 import { Price } from './price';
 
-const getValueView = (metadataByAssetId: Record<string, Metadata>, { amount, assetId }: Value) =>
+const getValueView = (metadataByAssetId: Map<string, Metadata>, { amount, assetId }: Value) =>
   new ValueView({
     valueView: {
       case: 'knownAssetId',
       value: {
         amount,
-        metadata: assetId ? metadataByAssetId[bech32mAssetId(assetId)] : undefined,
+        metadata: assetId ? metadataByAssetId.get(bech32mAssetId(assetId)) : undefined,
       },
     },
   });
@@ -24,7 +24,7 @@ export const Trace = ({
   metadataByAssetId,
 }: {
   trace: SwapExecution_Trace;
-  metadataByAssetId: Record<string, Metadata>;
+  metadataByAssetId: Map<string, Metadata>;
 }) => {
   return (
     <div className='flex w-full items-center justify-between gap-8'>

@@ -162,6 +162,12 @@ describe('lo-hi', () => {
   });
 
   describe('toBaseUnit', () => {
+    it('returns correct LoHi for integer value and undefined exponent', () => {
+      const result = toBaseUnit(BigNumber(12345));
+      expect(result.lo).toBe(12345n);
+      expect(result.hi).toBe(0n);
+    });
+
     it('returns correct LoHi for integer value and exponent 0', () => {
       const result = toBaseUnit(BigNumber(12345), 0);
       expect(result.lo).toBe(12345n);

@@ -14,7 +14,7 @@ export const Traces = ({
   output,
 }: {
   traces?: SwapExecution_Trace[];
-  metadataByAssetId: Record<string, Metadata>;
+  metadataByAssetId: Map<string, Metadata>;
   input: ValueView;
   output: ValueView;
 }) => {
