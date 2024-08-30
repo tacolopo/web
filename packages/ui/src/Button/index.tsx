@@ -1,10 +1,9 @@
-import { FC, forwardRef, MouseEventHandler } from 'react';
+import { FC, forwardRef, MouseEventHandler, ReactNode } from 'react';
 import styled, { css, DefaultTheme } from 'styled-components';
 import { asTransientProps } from '../utils/asTransientProps';
 import { Priority, focusOutline, overlays, buttonBase } from '../utils/button';
 import { getBackgroundColor } from './helpers';
 import { button } from '../utils/typography';
-import { LucideIcon } from 'lucide-react';
 import { Density } from '../types/Density';
 import { useDensity } from '../hooks/useDensity';
 import { ActionType } from '../utils/ActionType';
@@ -100,7 +99,7 @@ interface BaseButtonProps {
    * The button label. If `iconOnly` is `true` or `adornment`, this will be used
    * as the `aria-label` attribute.
    */
-  children: string;
+  children: ReactNode;
   /**
    * What type of action is this button related to? Leave as `default` for most
    * buttons, set to `accent` for the single most important action on a given
@@ -142,7 +141,7 @@ interface IconOnlyProps {
    * <Button icon={ChevronRight} iconOnly>Label</Button>
    * ```
    */
-  icon: LucideIcon | FC;
+  icon: FC<{ size?: string | number }>;
 }
 
 interface RegularProps {
@@ -158,7 +157,7 @@ interface RegularProps {
    * <Button icon={ChevronRight} iconOnly>Label</Button>
    * ```
    */
-  icon?: LucideIcon | FC;
+  icon?: FC<{ size?: string | number }>;
 }
 
 export type ButtonProps = BaseButtonProps & (IconOnlyProps | RegularProps) & MotionProp;
@@ -201,8 +200,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         type={type}
         disabled={disabled}
         onClick={onClick}
-        aria-label={iconOnly ? children : undefined}
-        title={iconOnly ? children : undefined}
+        aria-label={iconOnly && typeof children === 'string' ? children : undefined}
+        title={iconOnly && typeof children === 'string' ? children : undefined}
         $getFocusOutlineColor={theme => theme.color.action[outlineColorByActionType[actionType]]}
         $getFocusOutlineOffset={() => (iconOnly === 'adornment' ? '0px' : undefined)}
         $getBorderRadius={theme =>

@@ -1,22 +1,12 @@
-import { useMemo } from 'react';
 import { Link2Off } from 'lucide-react';
 import { Popover } from '@penumbra-zone/ui/Popover';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
 import { penumbra, usePraxManifest } from '../../../prax.ts';
+import { ProviderIcon } from './provider-icon.tsx';
 
 export const ProviderPopover = () => {
   const manifest = usePraxManifest();
-
-  const icon = useMemo(() => {
-    const icons = manifest?.icons;
-    const blob = icons?.['32'] ?? icons?.['128'];
-    const name = manifest?.name;
-    const element = !blob ? null : (
-      <img src={URL.createObjectURL(blob)} alt={name} className='size-4' />
-    );
-    return () => element;
-  }, [manifest]);
 
   const disconnect = () => {
     void penumbra.disconnect().then(() => window.location.reload());
@@ -25,8 +15,8 @@ export const ProviderPopover = () => {
   return (
     <Popover>
       <Popover.Trigger>
-        <Button icon={icon} iconOnly>
-          {manifest?.name ?? ''}
+        <Button icon={ProviderIcon} iconOnly>
+          {manifest?.name}
         </Button>
       </Popover.Trigger>
       <Popover.Content align='end' side='bottom'>
